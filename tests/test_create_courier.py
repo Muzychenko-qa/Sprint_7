@@ -16,6 +16,8 @@ class TestCreateCourier:
 
         assert response.status_code == 201 and response.text == '{"ok":true}'
 
+
+
     @allure.description("Проверка, что нельзя создать двух одинаковых курьеров")
     @allure.severity(allure.severity_level.NORMAL)
     @allure.title("Тест создания дубликата курьера")
@@ -36,3 +38,17 @@ class TestCreateCourier:
         user_body_missing_field = user_body.pop(missing_field)
         request = ScooterApi.create_courier(user_body_missing_field)
         assert request.status_code == 400
+
+    @allure.description("Проверка, что для создание курьера, нужно передать в ручку обязательные поля login и password")
+    def test_successful_courier_creation_requires_all_mandatory_fields(self, generate_random_login, delete_user):
+        user_body = TestDataHelper.generate_registration_body(generate_random_login)
+        incomplete_user_body = {
+            "password": user_body["password"],
+            "firstName": user_body["firstName"]
+        }
+        request = ScooterApi.create_courier(incomplete_user_body)
+        assert request.status_code == 400
+        user_body = TestDataHelper.generate_registration_body(generate_random_login)
+        user_body.pop("firstName")
+        request = ScooterApi.create_courier(user_body)
+        assert request.status_code == 201
