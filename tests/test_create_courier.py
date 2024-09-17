@@ -13,7 +13,6 @@ class TestCreateCourier:
     @allure.title("Тест успешного создания курьера")
     def test_successful_create_courier(self, generate_random_login, delete_user):
         response = ScooterApi.create_courier(TestDataHelper.generate_registration_body(generate_random_login))
-        login_response = ScooterApi.login_courier(TestDataHelper.generate_login_body(generate_random_login))
 
         assert response.status_code == 201 and response.text == '{"ok":true}'
 
@@ -33,7 +32,7 @@ class TestCreateCourier:
     @allure.severity(allure.severity_level.NORMAL)
     @allure.title("Тест создания курьера с отсутствующим полем")
     @pytest.mark.parametrize("missing_field", ["login", "password"])
-    def test_create_courier_missing_field_login_fails(self, missing_field, generate_random_login, delete_user):
+    def test_create_courier_missing_field_login_fails(self, missing_field, generate_random_login):
         user_body = TestDataHelper.generate_registration_body(generate_random_login)
 
         user_body_missing_field = user_body.pop(missing_field)
